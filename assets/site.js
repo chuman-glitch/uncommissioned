@@ -54,7 +54,7 @@ function footer(){
   f.className = "ft";
   f.innerHTML = `<div class="ft-band">
     <div class="grid ft-top">
-      <p class="ft-say">Found,<br>not visited.</p>
+      <p class="ft-say">It’s not vandalism<br>if it’s beautiful.</p>
       <nav class="ft-nav"><a href="edition.html?e=01">Edition 01</a><a href="edition.html?e=02">Edition 02</a><a href="about.html">About</a><a href="texts.html">Texts</a><a href="support.html">Support</a></nav>
     </div>
     <div class="grid ft-cols">
