@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edition · uncommissioned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=13">
+<style>
+/* head: ruled info rows around a giant title (like a programme sheet) */
+.head{background:var(--accent);color:var(--accent-ink);padding:0 var(--pad)}
+.rows{font-size:12px;font-weight:500}
+.rows .r{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);border-bottom:1px solid currentColor;padding:7px 0}
+.rows .r > :nth-child(1){grid-column:1/5}
+.rows .r > :nth-child(2){grid-column:5/9}
+.rows .r > :nth-child(3){grid-column:9/-1;text-align:right}
+.rows .r.wide > :nth-child(2){grid-column:5/-1}
+.rows b{font-weight:700}
+.head h1{font-weight:900;font-variation-settings:"wdth" 62;font-stretch:62%;text-transform:uppercase;font-size:clamp(64px,10.6vw,190px);line-height:.82;letter-spacing:-.015em;padding:clamp(40px,6vw,90px) 0 18px}
+.head h1 small{display:block;font-family:var(--serif);font-style:italic;font-size:.2em;font-weight:400;font-variation-settings:normal;font-stretch:100%;text-transform:none;letter-spacing:0;margin-top:.5em;line-height:1.15}
+.txt{grid-column:1/7}
+.rail{grid-column:7/9}
+.txt .t-body{margin-top:24px;max-width:60ch}
+.txt .t-body p+p{margin-top:1em}
+.side{grid-column:9/-1}
+.side .s{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line-2);padding:8px 0 10px}
+.side .s .t-display{font-size:clamp(44px,4.6vw,76px)}
+.side .s .t-meta{color:var(--fg)}
+.sec-head{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);align-items:end;margin-bottom:16px}
+.sec-head h2{grid-column:1/8}
+.sec-head .r{grid-column:9/-1;justify-self:end;text-align:right}
+/* featured works: a ruled list with a floating preview */
+.list{border-top:1px solid var(--fg)}
+.list a{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding:12px var(--pad) 13px;border-bottom:1px solid var(--line-2);align-items:baseline;transition:background .15s,color .15s}
+.list a:hover{background:var(--c);color:var(--k)}
+.list a:hover .t-meta{color:inherit}
+.list .no{grid-column:1/2}
+.list .ar{grid-column:2/5;font-size:15px;font-weight:500}
+.list .ti{grid-column:5/9;font-family:var(--serif);font-size:clamp(19px,1.6vw,25px);line-height:1.2;font-style:italic}
+.list .si{grid-column:9/12;font-size:13px}
+.list .go{grid-column:12/13;text-align:right}
+.preview{position:fixed;z-index:20;width:min(300px,26vw);aspect-ratio:4/5;object-fit:cover;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.96);transition:opacity .15s,transform .2s}
+.preview.on{opacity:1;transform:translate(-50%,-50%)}
+.filters{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);margin-bottom:16px;align-items:start}
+.filters .lab{grid-column:1/3;padding-top:5px}
+.filters .chips{grid-column:3/-1}
+.filters + .filters{margin-top:-6px}
+.count{margin:0 var(--pad) 10px}
+.run{font-family:var(--serif);font-size:clamp(17px,1.4vw,21px);line-height:1.6;max-width:110ch}
+.run .here{color:var(--accent)}
+.run .sl{color:var(--line-2);margin:0 .35em}
+@media (max-width:860px){
+  .rows .r > :nth-child(n){grid-column:1/-1;text-align:left}
+  .txt,.rail,.side,.sec-head h2,.sec-head .r,.filters .lab,.filters .chips{grid-column:1/-1;justify-self:start;text-align:left}
+  .side{margin-top:40px}
+  .filters .chips{margin-top:8px}
+  .list .no{grid-column:1/3}.list .ar{grid-column:3/-1}.list .ti{grid-column:3/-1}.list .si{grid-column:3/-1}.list .go{display:none}
+  .preview{display:none}
+}
+</style>
+</head>
+<body>
+<main id="main"></main>
+<img class="preview" id="pv" alt="">
+
+<script src="assets/data.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script src="assets/cur-dem.js?v=13"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+const key = EDITIONS[qs("e")] ? qs("e") : "01";
+const E = EDITIONS[key];
+setAccent(E.color);
+header("Edition " + key);
+document.title = `Edition ${key}, ${E.title} · uncommissioned`;
+
+const works = WORKS.filter(w => w.ed === key);
+const feat = works.filter(hasPage), rest = works.filter(w => !hasPage(w));
+const F = figures(key);
+const other = key === "01" ? "02" : "01";
+const stats = key === "01"
+  ? [["Artists", F.artists], ["Cities", F.cities], ["Countries", F.countries], ["Continents", F.continents], ["Days", 30]]
+  : [["Artists", F.artists], ["Works", F.works], ["Sites", new Set(works.map(w => w.site)).size], ["Islands", 2]];
+/* each note names where its marker sits: "lede" or a stat label */
+const mk = a => E.notes.map((x, i) => x[1] === a ? fm(i + 1) : "").join("");
+stats.forEach(s => s[1] = s[1] + mk(s[0]));
+const artists = [...new Set(works.map(w => w.artist))].sort((a, b) => a.localeCompare(b));
+const hasThreads = works.some(w => w.thread);
+
+document.getElementById("main").innerHTML = `
+  <section class="head">
+    <div class="rows"><div class="r"><span><b>Edition ${key}</b></span><span>${E.when}</span><span>${E.where}</span></div></div>
+    <h1>${E.title}${E.sub ? `<small>${E.sub}</small>` : ""}</h1>
+    <div class="rows">
+      ${E.people.map(p => `<div class="r wide"><span>${p[0]}</span><span>${t(p[1])}</span></div>`).join("")}
+      <div class="r" style="border-bottom:0"><span>${F.works} works</span><span>${feat.length} featured</span><span>uncommissioned</span></div>
+    </div>
+  </section>
+
+  <div class="space-l"></div>
+
+  <section class="pg grid">
+    <div class="txt">
+      <p class="t-lede">${E.lede}${mk("lede")}</p>
+      <div class="t-body">${E.body.map(p => `<p>${esc(p)}</p>`).join("")}</div>
+    </div>
+    <div class="rail" id="rail">${E.notes.map((x, i) => `<div class="fn" data-n="${i + 1}"><b>${i + 1}</b>${esc(x[0])}</div>`).join("")}</div>
+    <aside class="side">${stats.map(s => `<div class="s"><span class="t-meta">${s[0]}</span><span class="t-display">${s[1]}</span></div>`).join("")}</aside>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">${E.map === "curacao" ? "Sites on the island" : "Sites"}</h2><p class="r t-meta">${E.map === "curacao" ? "Click a point to open the work" : "Larger points hold more works. Click to list them."}</p></div>
+    <div class="map-wrap" id="map"></div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  ${rest.length ? `<section>
+    <div class="sec-head pg"><h2 class="t-1">Featured works</h2><p class="r t-meta">Each with its own page</p></div>
+    <div class="list" id="list">${feat.map(w => `
+      <a href="${workURL(w)}" data-img="${imgSrc(w)}" style="${cvars(w.color)}">
+        <span class="no t-meta">${cat(w)}</span>
+        <span class="ar">${esc(w.artist)}</span>
+        <span class="ti">${esc(w.title)}</span>
+        <span class="si t-meta">${esc(w.city)}${w.country !== w.city ? ", " + esc(w.country) : ""}</span>
+        <span class="go">→</span>
+      </a>`).join("")}
+    </div>
+  </section>
+
+  <div class="space-xl"></div>` : ""}
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">Index of works</h2><p class="r t-meta">${rest.length ? `All ${works.length} works. The ${feat.length} with a page are marked. Click any card.` : `All ${works.length} works, each with its own page.`}</p></div>
+    ${hasThreads ? `
+    <div class="filters pg"><span class="lab t-meta">Thread</span><div class="chips" id="f-thread"><button type="button" data-v="" aria-pressed="true">All</button>${Object.keys(THREADS).map(th => `<button type="button" data-v="${th}" aria-pressed="false">${th}</button>`).join("")}</div></div>
+    <div class="filters pg"><span class="lab t-meta">Continent</span><div class="chips" id="f-cont"><button type="button" data-v="" aria-pressed="true">All</button>${[...new Set(works.map(w => w.continent))].sort().map(c => `<button type="button" data-v="${c}" aria-pressed="false">${c}</button>`).join("")}</div></div>` : ""}
+    <p class="count t-meta" id="count"></p>
+    <div class="cards" id="cards">${works.map(card).join("")}</div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section class="pg">
+    <div class="sec-head"><h2 class="t-2">Artists in this edition</h2><p class="r t-meta">${artists.length} artists · featured in colour</p></div>
+    <p class="run">${artists.map(a => `<span${works.some(w => w.artist === a && hasPage(w)) ? ' class="here"' : ""}>${esc(a)}</span>`).join('<span class="sl">/</span>')}</p>
+  </section>
+
+  <div class="space-l"></div>
+  ${blocks([
+    {href:workURL(feat[0]), color:feat[0].color, k:"Begin here · first work in this edition →", h:esc(feat[0].title), s:esc(feat[0].artist)},
+    {href:`edition.html?e=${other}`, color:EDITIONS[other].color, k:`${other > key ? "Next" : "Previous"} edition · ${other} →`, h:EDITIONS[other].title, s:EDITIONS[other].when + " · " + figures(other).works + " works"},
+    {href:"support.html", color:"stone", plain:true, k:"Edition 03 · in development", h:"Support the next edition", s:"Site, partners and patrons →"}
+  ])}`;
+
+footer();
+railNotes(document.getElementById("rail"));
+
+/* floating preview on the featured list */
+const pv = document.getElementById("pv");
+document.querySelectorAll("#list a").forEach(a => {
+  a.addEventListener("mouseenter", () => { pv.src = a.dataset.img; pv.classList.add("on"); });
+  a.addEventListener("mouseleave", () => pv.classList.remove("on"));
+  a.addEventListener("mousemove", e => { pv.style.left = Math.min(e.clientX + 170, innerWidth - pv.offsetWidth / 2 - 8) + "px"; pv.style.top = e.clientY + "px"; });
+});
+
+/* cards + filters */
+const cardsEl = document.getElementById("cards");
+bindCards(cardsEl);
+const sel = {thread:"", cont:""};
+const apply = () => {
+  let n = 0;
+  cardsEl.querySelectorAll(".ic").forEach(c => {
+    const w = WORKS.find(x => x.id === c.dataset.id);
+    const ok = (!sel.thread || (w.thread || []).includes(sel.thread)) && (!sel.cont || w.continent === sel.cont);
+    c.classList.toggle("off", !ok); if (ok) n++;
+  });
+  document.getElementById("count").textContent = `Showing ${n} of ${works.length}`;
+};
+[["f-thread","thread"],["f-cont","cont"]].forEach(([id, k]) => {
+  const el = document.getElementById(id); if (!el) return;
+  el.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; sel[k] = b.dataset.v; el.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); apply(); });
+});
+apply();
+
+const mapEl = document.getElementById("map");
+(E.map === "curacao" ? curacaoMap(mapEl, works) : worldMap(mapEl, works, {labels:true}))
+  .catch(() => mapEl.innerHTML = '<p class="pg t-meta" style="padding:40px">Map could not load.</p>');
+</script>
+</body>
+</html>

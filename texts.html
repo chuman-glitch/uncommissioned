@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texts · uncommissioned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=13">
+<style>
+.top{padding-top:clamp(56px,9vw,140px)}
+.top h1{grid-column:1/-1}
+.q{grid-column:1/11;font-family:var(--serif);font-size:clamp(28px,3.4vw,54px);line-height:1.12;letter-spacing:-.01em;font-weight:400}
+.q-by{grid-column:1/-1;margin-top:20px}
+.list{border-top:1px solid var(--fg)}
+.row{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding:18px var(--pad) 22px;border-bottom:1px solid var(--line-2);transition:background .2s,color .2s;align-items:baseline}
+.row:hover{background:var(--note);color:var(--note-ink)}
+.row:hover .t-meta{color:inherit}
+.row .o{grid-column:1/3;font-weight:500}
+.row .h{grid-column:3/9;font-family:var(--serif);font-size:clamp(19px,1.6vw,25px);line-height:1.22}
+.row .by{grid-column:9/11}
+.row .d{grid-column:11/-1;text-align:right}
+@media (max-width:860px){.q{grid-column:1/-1}.row .o{grid-column:1/7}.row .d{grid-column:7/-1}.row .h{grid-column:1/-1;grid-row:2;margin-top:8px}.row .by{grid-column:1/-1;grid-row:3;margin-top:6px}}
+</style>
+</head>
+<body>
+<main>
+  <section class="top pg grid"><h1 class="t-1">Texts</h1></section>
+  <div class="space-l"></div>
+  <section class="pg grid">
+    <p class="q">“Reimagining how art enters public space and how communities encounter it outside the walls of galleries or institutions.”</p>
+    <p class="q-by t-meta">Grace Ebert, Colossal, October 2025</p>
+  </section>
+  <div class="space-l"></div>
+  <section>
+    <div class="pg grid" style="margin-bottom:18px;align-items:end">
+      <h2 class="t-2" style="grid-column:1/8">Criticism and press</h2>
+      <div class="fn" style="grid-column:9/-1;justify-self:end"><b>Note</b>Essays and critical responses commissioned for each edition will be published here in full. <span class="tbc">Proposed: one essay per edition.</span></div>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+  <div class="space-m"></div>
+  <p class="pg t-meta">Also in: Africa.com, Africa Art News, Shoutout LA. Press enquiries: <a class="ln" href="mailto:chuman@novocollective.org">chuman@novocollective.org</a></p>
+  <div class="space-l"></div>
+</main>
+<script src="assets/data.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script>
+header("Texts"); footer(); setAccent("signal");
+document.getElementById("list").innerHTML = TEXTS.map(x => `
+  <a class="row" href="${x.url}" target="_blank" rel="noopener" style="${cvars(x.color)}">
+    <span class="o">${esc(x.outlet)}</span>
+    <span class="h">${esc(x.title)} ↗</span>
+    <span class="by t-meta">${x.kind ? x.kind + "<br>" : ""}${esc(x.by)}</span>
+    <span class="d t-meta">Ed. ${x.ed} · ${x.date}</span>
+  </a>`).join("");
+</script>
+</body>
+</html>

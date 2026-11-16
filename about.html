@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · uncommissioned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=13">
+<style>
+.top{padding-top:clamp(56px,9vw,140px)}
+.top h1{grid-column:1/11}
+.essay .lede{grid-column:1/9}
+.essay .body{grid-column:3/9;margin-top:48px}
+.essay .body p+p{margin-top:1em}
+.essay aside{grid-column:10/-1;grid-row:1/3;align-self:start}
+.arts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.arts .tile{aspect-ratio:auto;min-height:clamp(300px,30vw,440px)}
+.arts .tile .h{font-size:clamp(22px,1.9vw,30px)}
+.arts .tile p{font-size:15px;line-height:1.4;margin-top:12px}
+.ppl{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap)}
+.ppl .g{grid-column:span 4}
+.ppl h3{border-top:1px solid var(--fg);padding-top:10px;margin-bottom:8px}
+.ppl .p{border-top:1px solid var(--line-2);padding:14px 0 18px}
+.ppl .p b{display:block;font-size:22px;font-weight:400;letter-spacing:-.01em}
+.ppl .p span{font-size:15px;color:var(--dim)}
+@media (max-width:1000px){.arts{grid-template-columns:1fr 1fr}.ppl .g{grid-column:1/-1;margin-bottom:40px}}
+@media (max-width:860px){.top h1,.essay .lede,.essay .body,.essay aside{grid-column:1/-1}.essay aside{grid-row:auto;margin-top:32px}}
+@media (max-width:520px){.arts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <section class="top pg grid">
+    <h1 class="t-1">Public art once happened everywhere. Now it mostly happens through permits.</h1>
+  </section>
+
+  <div class="space-l"></div>
+
+  <section class="pg grid essay">
+    <p class="lede t-lede"><i>uncommissioned</i> is a site-responsive exhibition that treats the city as both canvas and contested ground. It works outside commercial galleries and institutional patronage, and asks what public art becomes when commissions, committees and approvals are taken away.<button class="fm" type="button" data-n="1">1</button></p>
+    <aside>
+      <div class="fn" data-n="1"><b>1</b>The project takes its method from unsanctioned public interventions of the 1960s and 70s and from street practice today, and gives that method a curated, documented and citable form.</div>
+      <div class="fn" data-n="2"><b>2</b>The exhibition is opposed to monumental permanence. Works are temporary by design.</div>
+    </aside>
+    <div class="body t-body">
+      <p>Each edition invites artists to make temporary works in public space. They go in without an unveiling and without announced locations. Audiences come across them in alleys, transit stations, vacant lots, caves and coastlines.<button class="fm" type="button" data-n="2">2</button></p>
+      <p>Each edition then takes on a new landscape. The first spread across cities on five continents. The second gathered onto one island. Each is recorded on this site as a catalogue: every work, its site, its materials and its documentation.</p>
+      <p><i>uncommissioned</i> is a curatorial project of Nōvo Collective, an experimental platform for artist-led models of production, circulation and collaboration.</p>
+    </div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="pg" style="margin-bottom:28px"><h2 class="t-1">The protocol</h2></div>
+    <div class="arts" id="arts"></div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section class="pg">
+    <h2 class="t-1" style="margin-bottom:40px">People</h2>
+    <div class="ppl">
+      <div class="g">
+        <h3 class="t-meta" style="color:var(--fg)">Curators, Edition 01</h3>
+        <div class="p"><b>Sebastián Betancur-Montoya</b><span>An artist-centric ethos and decentred networks of trust</span></div>
+        <div class="p"><b>Mathieu Tremblin</b><span>The curator as someone who finds and supports informal creative activity in the city</span></div>
+        <div class="p"><b>Taylor Bythewood-Porter</b><span>Invisibility, structural, ancestral or poetic</span></div>
+        <div class="p"><b class="tbc">Curators, Edition 02</b><span>To confirm</span></div>
+      </div>
+      <div class="g">
+        <h3 class="t-meta" style="color:var(--fg)">Critics and respondents</h3>
+        <div class="p"><b>Shannon Jackson</b><span>Chair, Department of Art History, UC Berkeley</span></div>
+        <div class="p"><b>Gabriela Andrade Gorab</b><span>Curator, cultural producer and art writer</span></div>
+        <div class="p"><b>Harmen de Hoop</b><span>Artist, public space</span></div>
+        <div class="p"><b class="tbc">Advisory board</b><span>Proposed</span></div>
+      </div>
+      <div class="g">
+        <h3 class="t-meta" style="color:var(--fg)">Nōvo Collective</h3>
+        <div class="p"><b>Chuman Zhang</b><span>Executive Producer</span></div>
+        <div class="p"><b>Jerry Guo</b><span>Creative Director</span></div>
+        <div class="p"><b>Rania Daghmoura</b><span>Assistant Producer</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="space-l"></div>
+</main>
+
+<script src="assets/data.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script>
+header("About"); footer(); setAccent("signal");
+const A = [
+  ["I","Month-long and simultaneous","Each curator sets an area of inquiry and works with artists. Works go in before day one, with no unveiling and no announced locations.","vermilion"],
+  ["II","Found, not visited","Anyone who finds a work and tags it #uncommissioned adds its location to the public atlas.","bone"],
+  ["III","Returned to the public","On day 30 the work passes into the public domain with a placard. Any sale goes entirely to the artist.","blue"],
+  ["IV","Any medium","Sculpture, installation, sound, text, video, performance, digital media.","pink"],
+  ["V","Any public space","Alleys, transit stations, vacant lots, parks, forgotten infrastructure, landscape.","green"],
+];
+document.getElementById("arts").innerHTML = A.map(a => `<div class="tile" style="${cvars(a[3])}"><div class="k">Article ${a[0]}</div><div><div class="h">${a[1]}</div><p>${a[2]}</p></div></div>`).join("");
+</script>
+</body>
+</html>

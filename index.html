@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>uncommissioned</title>
+<meta name="description" content="uncommissioned is an international exhibition of public art made without permission. Produced by Nōvo Collective since 2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=13">
+<style>
+/* hero: a poster in one colour */
+.poster{--gw:min(330px,calc((100vw - 2 * var(--pad)) / 6.75));background:var(--accent);color:#141414;min-height:calc(100svh - 34px);padding:clamp(20px,3vw,40px) var(--pad) 12px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:1fr auto;column-gap:var(--gap);overflow:hidden}
+.poster .giant{font-weight:900;font-variation-settings:"wdth" 62;font-stretch:62%;text-transform:uppercase;line-height:.8;letter-spacing:-.015em;font-size:var(--gw);white-space:nowrap}
+.poster .un{grid-column:1/4;grid-row:1;align-self:end;margin-left:-.02em}
+.poster .inset{grid-column:5/8;grid-row:1;align-self:end;position:relative;margin-bottom:calc(var(--gw) * .08)}
+.poster .inset .frame{position:relative;aspect-ratio:4/5;max-height:46svh;overflow:hidden;border:1.5px solid #141414;cursor:pointer}
+.poster .inset img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.poster .inset img.on{opacity:1}
+.poster .inset .cap{font-size:11.5px;font-weight:500;margin-top:6px;min-height:2.6em}
+.poster .say{grid-column:9/-1;grid-row:1;align-self:end;margin-bottom:calc(var(--gw) * .1);font-family:var(--serif);font-size:clamp(19px,1.7vw,27px);line-height:1.18}
+.poster .say small{display:block;font-family:var(--f);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:16px}
+.poster .word{grid-column:1/-1;grid-row:2;margin:calc(var(--gw) * .06) 0 -.02em -.02em}
+.line{padding-top:clamp(56px,7vw,110px)}
+.line h1{grid-column:1/9}
+.line h1 .cyc{font-style:italic}
+.line .side{grid-column:10/-1;align-self:end;color:var(--fg)}
+.figs-wrap{position:relative}
+/* each note hangs under the figure it belongs to */
+.figs-wrap .notes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:var(--gap);margin-top:14px;align-items:start}
+.figs-wrap .notes .fn:nth-child(1){grid-column:1;margin-right:8%}
+.figs-wrap .notes .fn:nth-child(2){grid-column:2;margin-top:18px;margin-left:6%}
+.figs-wrap .notes .fn:nth-child(3){grid-column:5;margin-top:6px}
+@media (max-width:760px){.figs-wrap .notes{display:flex;flex-direction:column;gap:12px}.figs-wrap .notes .fn{margin:0!important}.figs-wrap .notes .fn:nth-child(even){margin-left:14%!important}}
+#figs{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:760px){#figs{grid-template-columns:1fr 1fr}}
+.sec-head{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);align-items:end;margin-bottom:18px}
+.sec-head h2{grid-column:1/8}
+.sec-head .r{grid-column:9/-1;justify-self:end;text-align:right}
+.atlas-foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:12px;align-items:flex-start}
+.atlas-foot .fn{margin-right:6%;margin-top:-22px}
+/* editions as two posters */
+.eds{display:grid;grid-template-columns:1fr 1fr}
+.edp{position:relative;background:var(--c);color:var(--k);padding:12px var(--pad) 18px;min-height:clamp(380px,40vw,560px);display:flex;flex-direction:column;overflow:hidden}
+.edp .rows{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.edp .rows div{display:flex;justify-content:space-between;border-bottom:1px solid currentColor;padding:5px 0}
+.edp .no{font-weight:900;font-variation-settings:"wdth" 62;font-stretch:62%;font-size:clamp(140px,19vw,330px);line-height:.78;margin-top:auto;letter-spacing:-.02em;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.edp .ti{font-size:clamp(20px,1.9vw,30px);line-height:1.08;letter-spacing:-.01em;margin-top:12px;max-width:18ch}
+.edp .peek{position:absolute;right:var(--pad);top:88px;bottom:18px;height:calc(100% - 106px);width:auto;max-width:42%;aspect-ratio:4/5;object-fit:cover;opacity:0;transform:translateY(16px);transition:opacity .35s,transform .45s cubic-bezier(.2,.7,.2,1)}
+.edp:hover .peek{opacity:1;transform:none}
+.edp:hover .no{transform:translateX(-.04em)}
+.ed3{background:transparent;border:1px solid var(--line-2);color:var(--dim)}
+.wr li{list-style:none;border-top:1px solid var(--line-2)}
+.wr a{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);padding:12px var(--pad) 14px;transition:background .2s,color .2s}
+.wr a:hover{background:var(--note);color:var(--note-ink)}
+.wr .o{grid-column:1/3;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.wr .h{grid-column:3/10;font-family:var(--serif);font-size:clamp(18px,1.5vw,22px);line-height:1.25}
+.wr .d{grid-column:10/-1;text-align:right;font-size:12px}
+/* index by continent */
+.ix{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--gap);border-top:1px solid var(--fg)}
+.ix-h{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 10px;border-bottom:1px solid var(--line-2);margin-bottom:6px}
+.ix-h .t-meta{color:var(--fg)}
+.ix-n{font-weight:900;font-variation-settings:"wdth" 62;font-stretch:62%;font-size:clamp(34px,3.2vw,52px);line-height:.85}
+.ix-city{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin:14px 0 3px}
+.ix-w{display:block;padding:3px 5px 4px;margin:0 -5px;font-size:12.5px;line-height:1.25;transition:background .12s,color .12s}
+.ix-w .a{display:block;font-weight:500}
+.ix-w i{display:block;font-family:var(--serif);font-size:14.5px;color:var(--dim);transition:color .12s}
+.ix-w:hover{background:var(--note);color:var(--note-ink)}
+.ix-w:hover i{color:inherit}
+.ix-pv{position:fixed;z-index:25;width:200px;aspect-ratio:1;object-fit:cover;pointer-events:none;opacity:0;transform:scale(.96);transition:opacity .12s,transform .18s}
+.ix-pv.on{opacity:1;transform:none}
+@media (max-width:1100px){.ix{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:28px}}
+@media (max-width:620px){.ix{grid-template-columns:1fr 1fr}.ix-pv{display:none}}
+.ix-clip{position:relative;max-height:560px;overflow:hidden;transition:max-height .6s cubic-bezier(.2,.7,.2,1)}
+.ix-clip::after{content:"";position:absolute;left:0;right:0;bottom:0;height:140px;background:linear-gradient(transparent,var(--bg));pointer-events:none;transition:opacity .3s}
+.ix-clip.open::after{opacity:0}
+.ix-more{border-top:1px solid var(--line-2);margin-top:0}
+.ix-more button{display:block;width:100%;padding:12px 0 13px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;text-align:left;transition:color .15s}
+.ix-more button:hover{color:var(--note)}
+.closing{grid-column:1/7;font-family:var(--serif)}
+.closing-l{grid-column:9/-1;align-self:end;justify-self:end}
+.closing-row{border-top:1px solid var(--line-2);padding-top:14px}
+@media (max-width:860px){
+  .poster{grid-template-rows:auto auto auto}
+  .poster .un{grid-column:1/6;grid-row:2}
+  .poster .inset{grid-column:7/-1;grid-row:2;margin-bottom:0}
+  .poster .say{grid-column:1/-1;grid-row:1;margin:0 0 28px}
+  .poster .word{grid-row:3}
+  .line h1,.line .side,.sec-head h2,.sec-head .r,.closing,.closing-l{grid-column:1/-1;justify-self:start;text-align:left}
+  .line .side{margin-top:20px}
+  .eds{grid-template-columns:1fr}
+  .wr .o{grid-column:1/7}.wr .d{grid-column:7/-1}.wr .h{grid-column:1/-1;grid-row:2;margin-top:4px}
+  .atlas-foot .fn{margin-top:0}
+  .closing-l{margin-top:20px}
+}
+</style>
+</head>
+<body>
+<main>
+  <section class="poster">
+    <div class="giant un">Un</div>
+    <figure class="inset"><div class="frame" id="frame"></div><figcaption class="cap" id="cap"></figcaption></figure>
+    <p class="say">An international exhibition of public art made without permits, committees or unveilings. Found, not visited.<small>Nōvo Collective, 2025 —</small></p>
+    <div class="giant word">commissioned</div>
+  </section>
+
+  <section class="line pg grid">
+    <h1 class="t-1">Public art, made without <span class="cyc" id="cyc">permission</span>.</h1>
+    <p class="side t-body">Every work, its site and its materials are recorded on this site, and nowhere else.</p>
+  </section>
+
+  <div class="space-l"></div>
+
+  <section class="pg figs-wrap">
+    <div class="figs" id="figs"></div>
+    <div class="notes">
+      <div class="fn" data-n="1"><b>1</b>Across two editions. Cannupa Hanska Luger is the only artist to have taken part in both.</div>
+      <div class="fn" data-n="2"><b>2</b>Counted from the mapped works. Brooklyn is counted as part of New York.</div>
+      <div class="fn" data-n="3"><b>3</b>No work in the project has been commissioned, permitted or approved in advance. That is the condition of taking part.</div>
+    </div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">Atlas<button class="fm" type="button" data-n="4" aria-label="Note 4">4</button></h2><p class="r t-meta">Hover a point for the work. Click to open it.</p></div>
+    <div class="map-wrap" id="world"></div>
+    <div class="atlas-foot pg">
+      <p class="t-meta"><span style="color:#ff5a2e">●</span> Edition 01, 2025 &nbsp; <span style="color:#2f5bff">●</span> Edition 02, 2026 &nbsp; Numbers count works at one place</p>
+      <div class="fn" data-n="4"><b>4</b>Every work is placed at its site, to the nearest neighbourhood. Exact spots are left for the visitor to find.</div>
+    </div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">Index</h2><p class="r t-meta" id="ix-sum"></p></div>
+    <div class="ix-clip" id="ix-clip"><div class="ix pg" id="ix"></div></div>
+    <div class="pg ix-more"><button type="button" id="ix-more">Show all works ↓</button></div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">Editions</h2><p class="r t-meta">Each edition takes on a new landscape</p></div>
+    <div class="eds" id="eds"></div>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section>
+    <div class="sec-head pg"><h2 class="t-1">Writing</h2><p class="r"><a class="ln t-meta" style="color:var(--fg)" href="texts.html">All texts →</a></p></div>
+    <ul class="wr" id="wr"></ul>
+  </section>
+
+  <div class="space-xl"></div>
+
+  <section class="pg grid closing-row">
+    <p class="closing t-2">Edition 03 is in development. We are looking for a site, partners and patrons.</p>
+    <div class="closing-l"><a class="ln t-3" href="support.html">Support the project →</a></div>
+  </section>
+
+  <div class="space-l"></div>
+</main>
+
+<script src="assets/data.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+/* figures, counted from the catalogue */
+const F = figures();
+document.getElementById("figs").innerHTML = [
+  [F.artists + fm(1), "Artists"], [F.cities + fm(2), "Cities"], [F.countries, "Countries"], [F.continents, "Continents"], ["0" + fm(3), "Permits requested"]
+].map(f => `<div class="f"><span class="t-display">${f[0]}</span><div class="t-meta">${f[1]}</div></div>`).join("");
+
+header(""); footer(); setAccent("signal");
+
+/* poster inset: featured works cycle */
+const feat = WORKS.filter(hasPage);
+const frame = document.getElementById("frame"), cap = document.getElementById("cap");
+frame.innerHTML = feat.map((w, i) => `<img src="img/${w.imgs[0]}" alt="" ${i ? 'loading="lazy"' : ""}>`).join("");
+const imgs = frame.querySelectorAll("img"); let fi = 0;
+const showF = () => { imgs.forEach((im, k) => im.classList.toggle("on", k === fi)); const w = feat[fi]; cap.innerHTML = `${esc(w.artist)}, <i>${esc(w.title)}</i>. ${esc(w.place)}`; frame.onclick = () => location.href = workURL(w); frame.style.cursor = "pointer"; };
+showF();
+if (!reduced) setInterval(() => { fi = (fi + 1) % feat.length; showF(); }, 2800);
+
+/* cycling word */
+const words = [["permission","vermilion"],["a commission","lime"],["a committee","pink"],["an unveiling","sky"],["a plinth","violet"]];
+let i = 0; const cyc = document.getElementById("cyc");
+cyc.style.color = col(words[0][1]).bg;
+if (!reduced) setInterval(() => { i = (i+1) % words.length; cyc.textContent = words[i][0]; cyc.style.color = col(words[i][1]).bg; }, 2200);
+
+/* map */
+worldMap(document.getElementById("world"), WORKS, {labels:true, curacaoHref:"edition.html?e=02"})
+  .catch(() => document.getElementById("world").innerHTML = '<p class="pg t-meta" style="padding:40px">Map could not load.</p>');
+
+/* index: every work, by continent, then city */
+const conts = d3.groups(WORKS, w => w.continent).sort((a, b) => b[1].length - a[1].length);
+const ix = document.getElementById("ix");
+document.getElementById("ix-sum").textContent = `${WORKS.length} works on ${conts.length} continents. Hover for an image, click to open.`;
+ix.innerHTML = conts.map(([c, ws]) => `<div class="ix-col">
+  <div class="ix-h"><span class="t-meta">${c}</span><span class="ix-n">${ws.length}</span></div>
+  ${d3.groups(ws, w => w.ed === "02" ? "Curaçao" : w.city.split(",")[0]).sort((a, b) => a[0].localeCompare(b[0])).map(([city, cw]) => `
+    <div class="ix-city">${esc(city)}</div>
+    ${cw.map(w => `<a class="ix-w" href="${hasPage(w) ? workURL(w) : "#"}" data-id="${w.id}"><span class="a">${esc(w.artist)}</span><i>${esc(w.title)}</i></a>`).join("")}`).join("")}
+</div>`).join("");
+const clip = document.getElementById("ix-clip"), more = document.getElementById("ix-more");
+more.textContent = `Show all ${WORKS.length} works ↓`;
+more.onclick = () => {
+  const open = clip.classList.toggle("open");
+  clip.style.maxHeight = open ? ix.scrollHeight + "px" : "";
+  more.textContent = open ? "Show less ↑" : `Show all ${WORKS.length} works ↓`;
+  if (!open) clip.scrollIntoView({behavior: reduced ? "auto" : "smooth", block: "start"});
+};
+const ixPv = Object.assign(document.createElement("img"), {className:"ix-pv", alt:""});
+document.body.append(ixPv);
+ix.addEventListener("mouseover", e => { const a = e.target.closest(".ix-w"); if (!a) return; const w = WORKS.find(x => x.id === a.dataset.id); const src = imgSrc(w); if (src) { ixPv.src = src; ixPv.classList.add("on"); } });
+ix.addEventListener("mouseout", e => { if (e.target.closest(".ix-w")) ixPv.classList.remove("on"); });
+ix.addEventListener("mousemove", e => { ixPv.style.left = Math.min(e.clientX + 24, innerWidth - 230) + "px"; ixPv.style.top = Math.min(e.clientY + 18, innerHeight - 230) + "px"; });
+ix.addEventListener("click", e => { const a = e.target.closest(".ix-w"); if (!a) return; const w = WORKS.find(x => x.id === a.dataset.id); if (!hasPage(w)) { e.preventDefault(); ixPv.classList.remove("on"); openWin(w, e.clientX, e.clientY); } });
+
+/* editions */
+const E1 = EDITIONS["01"], E2 = EDITIONS["02"];
+const edp = (k, E, img) => `<a class="edp" href="edition.html?e=${k}" style="${cvars(E.color)}">
+  <div class="rows"><div><span>Edition ${k}</span><span>${E.when}</span></div><div><span>${E.where}</span><span>${figures(k).artists} artists · ${figures(k).cities} ${figures(k).cities > 1 ? "cities" : "island"}</span></div></div>
+  <img class="peek" src="img/${img}" alt="" loading="lazy">
+  <div class="no">${k}</div><div class="ti">${E.title}${E.sub ? "<br><span style='opacity:.7'>" + E.sub + "</span>" : ""}</div></a>`;
+document.getElementById("eds").innerHTML = edp("01", E1, "33-nomad-studio-socarrado-castilla-y-leon.jpg") + edp("02", E2, "05-cannupa-hanska-luger-land-song-2026-kueba-di-indjan-curacao.jpg");
+
+/* writing */
+document.getElementById("wr").innerHTML = TEXTS.slice(0, 4).map(x => `<li><a href="${x.url}" target="_blank" rel="noopener" style="${cvars(x.color)}"><span class="o">${esc(x.outlet)}</span><span class="h">${esc(x.title)}</span><span class="d">${x.date} ↗</span></a></li>`).join("");
+
+ticket(6000);
+</script>
+</body>
+</html>

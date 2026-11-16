@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support · uncommissioned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=13">
+<style>
+.top{padding-top:clamp(56px,9vw,140px)}
+.top h1{grid-column:1/11}
+.top .lede{grid-column:1/8;margin-top:48px}
+.top aside{grid-column:9/-1;align-self:end}
+.ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.way{background:var(--c);color:var(--k);padding:18px var(--pad) 26px;min-height:clamp(380px,36vw,520px);display:flex;flex-direction:column;justify-content:space-between;transition:filter .2s}
+.way:hover{filter:brightness(1.06)}
+.way .h{font-size:clamp(32px,3.4vw,56px);line-height:1;letter-spacing:-.02em}
+.way p{font-size:16px;line-height:1.45;margin-top:16px;max-width:34ch}
+.way .go{font-weight:500;border-bottom:1px solid currentColor;align-self:flex-start;padding-bottom:2px}
+/* support record, per edition */
+.rec-h{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--fg);padding:10px 0 4px}
+.rec-h a:hover{color:var(--note)}
+.rec + .rec{margin-top:clamp(36px,4vw,60px)}
+.sup{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap);border-top:1px solid var(--line-2);padding:12px 0 14px}
+.rec-h + .sup{border-top:0}
+.sup .l{grid-column:1/4;padding-top:6px}
+.sup ul{grid-column:4/-1;list-style:none;display:flex;flex-wrap:wrap;gap:2px 30px;font-family:var(--serif);font-size:clamp(20px,1.9vw,28px);line-height:1.3}
+.sup.big ul{font-size:clamp(24px,2.5vw,38px)}
+@media (max-width:860px){.top h1,.top .lede,.top aside,.sup .l,.sup ul{grid-column:1/-1}.top aside{margin-top:28px}.ways{grid-template-columns:1fr}.sup ul{margin-top:10px}}
+</style>
+</head>
+<body>
+<main>
+  <section class="top pg grid">
+    <h1 class="t-1">Fund the conditions, not the object.</h1>
+    <p class="lede t-lede">Every sale in <i>uncommissioned</i> goes to the artist, and every work ends in the public domain. That only works if patrons and institutions pay for the time, travel, materials and research behind each edition.<button class="fm" type="button" data-n="1">1</button></p>
+    <aside><div class="fn" data-n="1"><b>1</b>Gifts are tax-deductible in the US through our fiscal sponsor, Fractured Atlas, a 501(c)(3) nonprofit.</div></aside>
+  </section>
+  <div class="space-l"></div>
+  <section class="ways" id="ways"></section>
+  <div class="space-xl"></div>
+  <section class="pg">
+    <div class="sec-head" style="margin-bottom:18px"><h2 class="t-1">Supported by</h2></div>
+    <div id="sups"></div>
+    <div class="rec"><div class="rec-h"><span class="t-meta" style="color:var(--fg)">Throughout</span></div>
+      <div class="sup"><span class="l t-meta">Fiscal sponsor</span><ul><li>Fractured Atlas</li></ul></div></div>
+  </section>
+  <div class="space-l"></div>
+</main>
+<script src="assets/data.js?v=13"></script>
+<script src="assets/site.js?v=13"></script>
+<script>
+header("Support"); footer(); setAccent("signal");
+const W = [
+  ["I","Patrons","Individuals who fund artist fees, travel and production for an edition. Patrons are credited in the edition record and invited into the field programme.","Give via Fractured Atlas ↗","https://fundraising.fracturedatlas.org/uncommissioned/general_support","vermilion"],
+  ["II","Host an edition","Cities, islands, foundations and residencies that offer a landscape and local partners for the next edition.","Start a conversation →","mailto:hi@novocollective.org?subject=Host%20an%20edition%20of%20uncommissioned","bone"],
+  ["III","Institutional partners","Museums and universities that co-produce research, programming and publication around an edition.","Partnership enquiries →","mailto:hi@novocollective.org?subject=uncommissioned%20partnership","blue"],
+];
+document.getElementById("ways").innerHTML = W.map(w => `<a class="way" href="${w[4]}" ${w[4].startsWith("http") ? 'target="_blank" rel="noopener"' : ""} style="${cvars(w[5])}"><span class="t-meta" style="color:inherit">${w[0]}</span><div><div class="h">${w[1]}</div><p>${w[2]}</p></div><span class="go">${w[3]}</span></a>`).join("");
+document.getElementById("sups").innerHTML = SUPPORTERS.map(r => `<div class="rec">
+  <div class="rec-h"><span class="t-meta" style="color:var(--fg)">${esc(r.title)}</span><a class="t-meta" href="edition.html?e=${r.ed}">The edition →</a></div>
+  ${r.rows.map(([l, xs], i) => `<div class="sup${i === 0 ? " big" : ""}"><span class="l t-meta">${esc(l)}</span><ul>${xs.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+</div>`).join("");
+</script>
+</body>
+</html>
