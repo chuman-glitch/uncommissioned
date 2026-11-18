@@ -171,6 +171,8 @@ function openWin(w, x, y, title){
         ${w.thread ? `<dt>Thread</dt><dd>${w.thread.join(", ")}</dd>` : ""}
         <dt>Coords</dt><dd>${w.lat.toFixed(2)}, ${w.lon.toFixed(2)}</dd>
       </dl>
+      ${w.text && w.text.length ? `<p class="ex">${esc(w.text[0].length > 260 ? w.text[0].slice(0, 260).replace(/\s+\S*$/, "") + "…" : w.text[0])}</p>` : ""}
+      ${w.videos ? `<p style="margin-top:8px">${w.videos.map((v, i) => `<a class="ln" href="https://www.youtube.com/watch?v=${v}" target="_blank" rel="noopener">Video ${w.videos.length > 1 ? i + 1 : ""} ↗</a>`).join(" &nbsp; ")}</p>` : ""}
       ${hasPage(w) ? `<p style="margin-top:10px"><a class="ln" href="${workURL(w)}">Open the full page →</a></p>` : ""}
     </div>`;
   document.body.append(el);
