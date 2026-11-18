@@ -10,7 +10,7 @@
 <title>Work · uncommissioned</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=14">
+<link rel="stylesheet" href="assets/style.css?v=16">
 <style>
 /* a record card beside an image viewer */
 .sheet{display:grid;grid-template-columns:minmax(320px,5fr) 7fr;height:calc(100svh - 34px);min-height:560px;max-height:900px;border-bottom:1px solid var(--line-2)}
@@ -20,6 +20,10 @@
 .cells div:first-child{border-left:0}
 .cells span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;opacity:.65;margin-bottom:2px}
 .card .main{padding:clamp(22px,3vw,44px) clamp(16px,1.8vw,26px) 18px;flex:1}
+.strip{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:9px var(--pad);border-bottom:1px solid var(--line-2)}
+.strip .t-meta{color:var(--fg)}
+.strip a{text-decoration:underline;text-underline-offset:2px}
+.gap{height:clamp(28px,4vw,56px)}
 .card h1 .fm{font-style:normal;vertical-align:.6em}
 .card h1{font-family:var(--serif);font-size:clamp(30px,3vw,50px);line-height:1.04;letter-spacing:-.01em;font-weight:400;font-style:italic}
 .card .by{font-size:clamp(16px,1.3vw,19px);margin-top:12px;font-weight:500}
@@ -61,61 +65,70 @@
 <body>
 <main id="main"></main>
 
-<script src="assets/data.js?v=14"></script>
-<script src="assets/site.js?v=14"></script>
+<script src="assets/data.js?v=16"></script>
+<script src="assets/site.js?v=16"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script>
+/* one page per artist and edition: an artist with two works (Avantia Damberg,
+   Edition 02) gets both on the same page, one record sheet each */
 const pages = WORKS.filter(hasPage);
-const w = pages.find(x => x.id === qs("w")) || pages[0];
+const req = pages.find(x => x.id === qs("w")) || pages[0];
+const entries = pages.filter((x, i) => pages.findIndex(y => y.ed === x.ed && y.artist === x.artist) === i);
+const group = pages.filter(x => x.ed === req.ed && x.artist === req.artist);
+const w = group[0];
 const E = EDITIONS[w.ed];
 setAccent(w.color);
 header("Edition " + w.ed);
-document.title = `${w.artist}, ${w.title} · uncommissioned`;
-const i = pages.indexOf(w), prev = pages[(i - 1 + pages.length) % pages.length], next = pages[(i + 1) % pages.length];
-const texts = TEXTS.filter(x => x.work === w.id);
-const catNo = cat(w);
-const coords = `${Math.abs(w.lat).toFixed(2)}° ${w.lat >= 0 ? "N" : "S"}, ${Math.abs(w.lon).toFixed(2)}° ${w.lon >= 0 ? "E" : "W"}`;
+document.title = `${w.artist}, ${group.map(x => x.title).join(" / ")} · uncommissioned`;
+const i = entries.indexOf(w), prev = entries[(i - 1 + entries.length) % entries.length], next = entries[(i + 1) % entries.length];
+const texts = TEXTS.filter(x => group.some(g => x.work === g.id) || x.artist === w.artist);
+const pics = x => x.imgs && x.imgs.length ? x.imgs.map(f => "img/" + f) : (x.thumb ? [x.thumb] : []);
+const coords = x => `${Math.abs(x.lat).toFixed(2)}° ${x.lat >= 0 ? "N" : "S"}, ${Math.abs(x.lon).toFixed(2)}° ${x.lon >= 0 ? "E" : "W"}`;
 
-document.getElementById("main").innerHTML = `
-  <section class="sheet">
+const sheet = (x, n) => `
+  <section class="sheet" id="w-${x.id}" style="${cvars(x.color)};--accent:${col(x.color).bg};--accent-ink:${col(x.color).ink}">
     <div class="card">
       <div class="cells">
-        <div><span>Cat.</span>${catNo}</div>
-        <div><span>Edition</span>${w.ed}</div>
-        <div><span>Year</span>${w.year}</div>
-        <div><span>${w.from ? "From" : "Country"}</span>${esc(w.from || w.country)}</div>
+        <div><span>Cat.</span>${cat(x)}</div>
+        <div><span>Edition</span>${x.ed}</div>
+        <div><span>Year</span>${x.year}</div>
+        <div><span>${x.from ? "From" : "Country"}</span>${esc(x.from || x.country)}</div>
       </div>
       <div class="main">
-        <h1>${esc(w.title)}${w.note ? fm(1) : ""}</h1>
-        <p class="by">${esc(w.artist)}${w.sub ? `<small>${esc(w.sub)}</small>` : ""}</p>
+        <h1>${esc(x.title)}${x.note ? fm(n + 1) : ""}</h1>
+        <p class="by">${esc(x.artist)}${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</p>
         <dl>
-          <div><dt>Type</dt><dd>${t(w.type || (w.medium || []).join(", "))}</dd></div>
-          ${w.materials ? `<div><dt>Materials</dt><dd>${t(w.materials)}</dd></div>` : ""}${w.thread ? `<div><dt>Thread</dt><dd>${w.thread.join(", ")}</dd></div>` : ""}
-          <div><dt>Site</dt><dd>${esc(w.place.startsWith(w.site) ? w.place : w.site + ", " + w.place)}</dd></div>
-          <div><dt>Coordinates</dt><dd>${coords} <span style="opacity:.6">approx.</span></dd></div>
+          <div><dt>Type</dt><dd>${t(x.type || (x.medium || []).join(", "))}</dd></div>
+          ${x.materials ? `<div><dt>Materials</dt><dd>${t(x.materials)}</dd></div>` : ""}${x.thread ? `<div><dt>Thread</dt><dd>${x.thread.join(", ")}</dd></div>` : ""}
+          <div><dt>Site</dt><dd>${esc(x.place.startsWith(x.site) ? x.place : x.site + ", " + x.place)}</dd></div>
+          <div><dt>Coordinates</dt><dd>${coords(x)} <span style="opacity:.6">approx.</span></dd></div>
           <div><dt>Edition</dt><dd>${E.title}, ${E.when}</dd></div>
         </dl>
-        ${w.note ? `<div class="fn" data-n="1"><b>Note</b>${t(w.note)}</div>` : ""}
+        ${x.note ? `<div class="fn" data-n="${n + 1}"><b>Note</b>${t(x.note)}</div>` : ""}
       </div>
     </div>
     <div class="viewer">
-      <div class="stage" id="stage">${w.imgs.map((f, k) => `<img src="img/${f}" alt="${esc(w.artist)}, ${esc(w.title)}, view ${k + 1}"${k ? ' loading="lazy"' : ""}>`).join("")}
-        <div class="loc" id="loc"><p>${esc(w.place)}</p></div>
+      <div class="stage" data-k="${n}">${pics(x).map((f, k) => `<img src="${f}" alt="${esc(x.artist)}, ${esc(x.title)}, view ${k + 1}"${k ? ' loading="lazy"' : ""}>`).join("")}
+        <div class="loc" data-id="${x.id}"><p>${esc(x.place)}</p></div>
       </div>
       <div class="vbar">
-        <span class="dim">Fig. <span id="fig">1</span>. ${esc(w.artist)}, <i>${esc(w.title)}</i>, ${w.year}</span>
-        <span>${w.imgs.length > 1 ? `<button type="button" id="pv">←</button> <span id="ct">1</span> / ${w.imgs.length} <button type="button" id="nx">→</button>` : "1 / 1"}</span>
+        <span class="dim">Fig. <span class="fig">1</span>. ${esc(x.artist)}, <i>${esc(x.title)}</i>, ${x.year}</span>
+        <span>${pics(x).length > 1 ? `<button type="button" class="pv">←</button> <span class="ct">1</span> / ${pics(x).length} <button type="button" class="nx">→</button>` : "1 / 1"}</span>
       </div>
     </div>
-  </section>
+  </section>`;
+
+document.getElementById("main").innerHTML = `
+  ${group.length > 1 ? `<div class="strip pg"><span class="t-meta">${esc(w.artist)}</span><span class="t-meta">${group.length} works in Edition ${w.ed}: ${group.map(x => `<a href="#w-${x.id}">${esc(x.title)}</a>`).join(" · ")}</span></div>` : ""}
+  ${group.map(sheet).join('<div class="gap"></div>')}
 
   <div class="space-l"></div>
 
   <section class="pg grid">
     <div class="after">
       <p class="t-meta caps">Cite as</p>
-      <p class="t-body" style="margin-top:6px">${esc(w.artist)}, <i>${esc(w.title)}</i>, ${w.year}. <i>uncommissioned</i>, Edition ${w.ed}, cat. ${catNo}. Nōvo Collective. uncommissioned.art/work/${w.id}</p>
+      ${group.map(x => `<p class="t-body" style="margin-top:6px">${esc(x.artist)}, <i>${esc(x.title)}</i>, ${x.year}. <i>uncommissioned</i>, Edition ${x.ed}, cat. ${cat(x)}. Nōvo Collective. uncommissioned.art/work/${x.id}</p>`).join("")}
     </div>
     <div class="after-r">
       <p class="t-meta caps" style="margin-bottom:8px">Writing on this work</p>
@@ -131,30 +144,41 @@ document.getElementById("main").innerHTML = `
   ])}`;
 
 footer();
+if (req !== w) document.getElementById("w-" + req.id)?.scrollIntoView();
 
-/* image viewer */
-const ims = document.querySelectorAll("#stage img"); let k = 0;
-const show = n => { k = (n + ims.length) % ims.length; ims.forEach((im, j) => im.classList.toggle("on", j === k)); const ct = document.getElementById("ct"); if (ct) ct.textContent = k + 1; document.getElementById("fig").textContent = k + 1; };
-show(0);
-document.getElementById("stage").addEventListener("click", e => { if (!e.target.closest(".loc")) show(k + 1); });
-document.getElementById("pv")?.addEventListener("click", () => show(k - 1));
-document.getElementById("nx")?.addEventListener("click", () => show(k + 1));
-addEventListener("keydown", e => { if (e.key === "ArrowRight") show(k + 1); if (e.key === "ArrowLeft") show(k - 1); });
+/* image viewers, one per sheet */
+const viewers = [...document.querySelectorAll(".sheet")].map(sh => {
+  const ims = sh.querySelectorAll(".stage img"); let k = 0;
+  const show = n => { k = (n + ims.length) % ims.length; ims.forEach((im, j) => im.classList.toggle("on", j === k)); const ct = sh.querySelector(".ct"); if (ct) ct.textContent = k + 1; sh.querySelector(".fig").textContent = k + 1; };
+  show(0);
+  sh.querySelector(".stage").addEventListener("click", e => { if (!e.target.closest(".loc")) show(k + 1); });
+  sh.querySelector(".pv")?.addEventListener("click", () => show(k - 1));
+  sh.querySelector(".nx")?.addEventListener("click", () => show(k + 1));
+  return {sh, step: d => show(k + d)};
+});
+/* arrow keys drive the sheet most in view */
+addEventListener("keydown", e => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  const v = viewers.reduce((a, b) => Math.abs(b.sh.getBoundingClientRect().top) < Math.abs(a.sh.getBoundingClientRect().top) ? b : a);
+  v.step(e.key === "ArrowRight" ? 1 : -1);
+});
 
-/* locator */
+/* locators */
 (async () => {
-  const el = document.getElementById("loc");
-  const svg = d3.select(el).insert("svg", ":first-child").attr("viewBox", "0 0 300 200");
   const isCur = w.ed === "02";
   const topo = await fetch(isCur ? COUNTRIES10 : LAND).then(r => r.json());
   const land = isCur ? {type:"FeatureCollection", features: topojson.feature(topo, topo.objects.countries).features.filter(f => /Cura/.test(f.properties.name))}
                      : topojson.feature(topo, topo.objects.land);
-  const proj = isCur
-    ? d3.geoMercator().fitExtent([[14,14],[286,186]], {type:"MultiPoint", coordinates:[[-69.17,12.40],[-68.62,11.96]]})
-    : d3.geoMercator().center([w.lon, w.lat]).scale(420).translate([150, 100]);
-  svg.append("path").attr("class", "land").attr("d", d3.geoPath(proj)(land));
-  const [x, y] = proj([w.lon, w.lat]);
-  svg.append("circle").attr("cx", x).attr("cy", y).attr("r", 7).attr("fill", col(w.color).bg).attr("stroke", "#fff").attr("stroke-width", 2);
+  document.querySelectorAll(".loc").forEach(el => {
+    const x = WORKS.find(y => y.id === el.dataset.id);
+    const svg = d3.select(el).insert("svg", ":first-child").attr("viewBox", "0 0 300 200");
+    const proj = isCur
+      ? d3.geoMercator().fitExtent([[14,14],[286,186]], {type:"MultiPoint", coordinates:[[-69.17,12.40],[-68.62,11.96]]})
+      : d3.geoMercator().center([x.lon, x.lat]).scale(420).translate([150, 100]);
+    svg.append("path").attr("class", "land").attr("d", d3.geoPath(proj)(land));
+    const [px, py] = proj([x.lon, x.lat]);
+    svg.append("circle").attr("cx", px).attr("cy", py).attr("r", 7).attr("fill", col(x.color).bg).attr("stroke", "#fff").attr("stroke-width", 2);
+  });
 })().catch(() => {});
 </script>
 </body>

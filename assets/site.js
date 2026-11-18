@@ -5,7 +5,7 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;
 const t = s => { s = String(s ?? ""); return s.startsWith("tbc:") ? `<span class="tbc" title="To confirm">${esc(s.slice(4))}</span>` : esc(s); };
 const col = name => PALETTE[name] || PALETTE.stone;
 const cvars = name => `--c:${col(name).bg};--k:${col(name).ink}`;
-const hasPage = w => !!(w.feat && w.title && w.imgs && w.imgs.length);
+const hasPage = w => !!(w.feat && w.title && ((w.imgs && w.imgs.length) || w.thumb));
 /* featured works carry their own colour; every other work takes its edition's colour */
 const wcol = w => hasPage(w) ? w.color : EDITIONS[w.ed].color;
 const imgSrc = w => w.imgs && w.imgs.length ? "img/" + w.imgs[0] : (w.thumb || "");
@@ -16,10 +16,11 @@ const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* the project's own colour (home page, footnotes). A draft-only picker in
    the corner tries the options; the choice is remembered in this browser. */
-const SIGNALS = {mint:"#9fe0c8", lilac:"#c8bfff", aluminium:"#c9ccc8", paper:"#e9dfb4"};
+const SIGNALS = {mint:"#9fe0c8", lilac:"#c8bfff", aluminium:"#c9ccc8", paper:"#e9dfb4", acid:"#d6ff3a", flamingo:"#ff6fcf", cyan:"#3fe3ff"};
 let signalName = "mint";
 try { const v = localStorage.getItem("uc-signal"); if (SIGNALS[v]) signalName = v; } catch (e) {}
 function applySignal(name){
+  if (!SIGNALS[name]) name = "mint";
   signalName = name; PALETTE.signal = {bg:SIGNALS[name], ink:"#111"};
   document.documentElement.style.setProperty("--note", SIGNALS[name]);
   if (document.documentElement.dataset.accent === "signal") setAccent("signal");
@@ -74,8 +75,19 @@ function footer(){
   const pk = document.createElement("div");
   pk.className = "picker";
   pk.innerHTML = `<span>Colour</span>` + Object.entries(SIGNALS).map(([k, v]) => `<button type="button" data-k="${k}" title="${k}" aria-label="${k}" aria-pressed="${k === signalName}" style="background:${v}"></button>`).join("");
-  pk.onclick = e => { const b = e.target.closest("button"); if (!b) return; applySignal(b.dataset.k); try { localStorage.setItem("uc-signal", b.dataset.k); } catch (er) {} pk.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+  pk.onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; applySignal(b.dataset.k); try { localStorage.setItem("uc-signal", b.dataset.k); } catch (er) {} pk.querySelectorAll("button[data-k]").forEach(x => x.setAttribute("aria-pressed", x === b)); };
   document.body.append(pk);
+  /* home only: try the two hero layouts */
+  if (document.querySelector(".poster")) {
+    let hero = "a";
+    try { const v = localStorage.getItem("uc-hero"); if (v === "a" || v === "b") hero = v; } catch (e) {}
+    document.body.dataset.hero = hero;
+    const hp = document.createElement("span");
+    hp.className = "hero-pick";
+    hp.innerHTML = `<span>Hero</span><button type="button" data-h="a" aria-pressed="${hero === "a"}">Full bleed</button><button type="button" data-h="b" aria-pressed="${hero === "b"}">Editorial</button>`;
+    hp.onclick = e => { const b = e.target.closest("button"); if (!b) return; document.body.dataset.hero = b.dataset.h; try { localStorage.setItem("uc-hero", b.dataset.h); } catch (er) {} hp.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+    pk.append(hp);
+  }
   initNotes();
 }
 
