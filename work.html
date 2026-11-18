@@ -10,7 +10,7 @@
 <title>Work · uncommissioned</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..900;1,62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=16">
+<link rel="stylesheet" href="assets/style.css?v=17">
 <style>
 /* a record card beside an image viewer */
 .sheet{display:grid;grid-template-columns:minmax(320px,5fr) 7fr;height:calc(100svh - 34px);min-height:560px;max-height:900px;border-bottom:1px solid var(--line-2)}
@@ -65,8 +65,8 @@
 <body>
 <main id="main"></main>
 
-<script src="assets/data.js?v=16"></script>
-<script src="assets/site.js?v=16"></script>
+<script src="assets/data.js?v=17"></script>
+<script src="assets/site.js?v=17"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script>
@@ -83,6 +83,7 @@ header("Edition " + w.ed);
 document.title = `${w.artist}, ${group.map(x => x.title).join(" / ")} · uncommissioned`;
 const i = entries.indexOf(w), prev = entries[(i - 1 + entries.length) % entries.length], next = entries[(i + 1) % entries.length];
 const texts = TEXTS.filter(x => group.some(g => x.work === g.id) || x.artist === w.artist);
+const credFor = (x, f) => { const k = Object.keys(IMG_CREDITS).find(p => f.split("/").pop().startsWith(p)); return k ? IMG_CREDITS[k] : (x.credit || ""); };
 const pics = x => x.imgs && x.imgs.length ? x.imgs.map(f => "img/" + f) : (x.thumb ? [x.thumb] : []);
 const coords = x => `${Math.abs(x.lat).toFixed(2)}° ${x.lat >= 0 ? "N" : "S"}, ${Math.abs(x.lon).toFixed(2)}° ${x.lon >= 0 ? "E" : "W"}`;
 
@@ -101,7 +102,7 @@ const sheet = (x, n) => `
         <dl>
           <div><dt>Type</dt><dd>${t(x.type || (x.medium || []).join(", "))}</dd></div>
           ${x.materials ? `<div><dt>Materials</dt><dd>${t(x.materials)}</dd></div>` : ""}${x.thread ? `<div><dt>Thread</dt><dd>${x.thread.join(", ")}</dd></div>` : ""}
-          <div><dt>Site</dt><dd>${esc(x.place.startsWith(x.site) ? x.place : x.site + ", " + x.place)}</dd></div>
+          <div><dt>Site</dt><dd>${esc([x.site, ...x.place.split(", ").filter(p => !x.site.includes(p))].join(", "))}</dd></div>
           <div><dt>Coordinates</dt><dd>${coords(x)} <span style="opacity:.6">approx.</span></dd></div>
           <div><dt>Edition</dt><dd>${E.title}, ${E.when}</dd></div>
         </dl>
@@ -109,11 +110,11 @@ const sheet = (x, n) => `
       </div>
     </div>
     <div class="viewer">
-      <div class="stage" data-k="${n}">${pics(x).map((f, k) => `<img src="${f}" alt="${esc(x.artist)}, ${esc(x.title)}, view ${k + 1}"${k ? ' loading="lazy"' : ""}>`).join("")}
+      <div class="stage" data-k="${n}">${pics(x).map((f, k) => `<img src="${f}" data-cr="${esc(credFor(x, f))}" alt="${esc(x.artist)}, ${esc(x.title)}, view ${k + 1}"${k ? ' loading="lazy"' : ""}>`).join("")}
         <div class="loc" data-id="${x.id}"><p>${esc(x.place)}</p></div>
       </div>
       <div class="vbar">
-        <span class="dim">Fig. <span class="fig">1</span>. ${esc(x.artist)}, <i>${esc(x.title)}</i>, ${x.year}</span>
+        <span class="dim">Fig. <span class="fig">1</span>. ${esc(x.artist)}, <i>${esc(x.title)}</i>, ${x.year}<span class="cr"></span></span>
         <span>${pics(x).length > 1 ? `<button type="button" class="pv">←</button> <span class="ct">1</span> / ${pics(x).length} <button type="button" class="nx">→</button>` : "1 / 1"}</span>
       </div>
     </div>
@@ -149,7 +150,7 @@ if (req !== w) document.getElementById("w-" + req.id)?.scrollIntoView();
 /* image viewers, one per sheet */
 const viewers = [...document.querySelectorAll(".sheet")].map(sh => {
   const ims = sh.querySelectorAll(".stage img"); let k = 0;
-  const show = n => { k = (n + ims.length) % ims.length; ims.forEach((im, j) => im.classList.toggle("on", j === k)); const ct = sh.querySelector(".ct"); if (ct) ct.textContent = k + 1; sh.querySelector(".fig").textContent = k + 1; };
+  const show = n => { k = (n + ims.length) % ims.length; ims.forEach((im, j) => im.classList.toggle("on", j === k)); const ct = sh.querySelector(".ct"); if (ct) ct.textContent = k + 1; sh.querySelector(".fig").textContent = k + 1; const c = ims[k]?.dataset.cr; sh.querySelector(".cr").textContent = c ? ". " + c : ""; };
   show(0);
   sh.querySelector(".stage").addEventListener("click", e => { if (!e.target.closest(".loc")) show(k + 1); });
   sh.querySelector(".pv")?.addEventListener("click", () => show(k - 1));
